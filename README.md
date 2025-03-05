@@ -9,3 +9,4 @@ The Docker images built are hosted on my public repo at Docker Hub: https://hub.
 
 - I use the `bullseye` and `buster` version of python3-slim and redis Docker images, since my Kubernetes lab consists of Raspberry Pi's, running Raspbian 10.
 - To build and upload multi-arch images to Docker Hub, use [buildx](https://github.com/docker/buildx): `docker buildx build --push --platform linux/arm/v7,linux/amd64 --tag sitronno/redishello:v1.0 .`
+- This was part of my [k8s-n00b](https://github.com/SitronNO/k8s-n00b) project, but k8s-n00b is no longer under maintenance.
