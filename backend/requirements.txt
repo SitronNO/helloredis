@@ -1,2 +1,4 @@
+fastapi_utils
 fastapi[standard]
 uvicorn[standard]
+Redis
