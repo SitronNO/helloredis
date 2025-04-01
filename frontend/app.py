@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, render_template
 import requests
 import socket
 
@@ -14,7 +14,7 @@ def index():
         response = requests.put('http://localhost:8000/redisdata', json=json_data)
         response.raise_for_status()
     except requests.exceptions.RequestException as error:
-        return render_template('error.html', error=str(error))
+        return render_template('error.html', error=str(error), hostname=socket.gethostname())
         
     # Query the same endpoint with a GET request
     response = requests.get('http://localhost:8000/redisdata')

@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% block redis %}
-    <h1>Error</h1>
-    <p>{{ error }}</p>
-    <a href="/">Go back</a>
+     <div class="alert">
+    	<h1>Error</h1>
+	<p>Sorry, an error occurred: </p>
+	<p>{{ error }}<br /></p>
+	<br />
+	<p><a href="/">Go back</a></p>
+</div> 
 {% endblock %}
