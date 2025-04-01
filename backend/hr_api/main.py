@@ -47,14 +47,12 @@ def welcome(request: Request):
 @app.get("/redishealth", status_code=status.HTTP_200_OK)
 def redishealth():
     try:
-        print(redis)
         redis.ping()
         return {"redis": "Redis is healthy"}
     except RedisError:
         return {"redis": "Redis is unhealthy"}
 
-#@app.get("/redisdata", response_model=RedisDataResponse, status_code=status.HTTP_200_OK)
-@app.get("/redisdata", status_code=status.HTTP_200_OK)
+@app.get("/redisdata", response_model=RedisDataResponse, status_code=status.HTTP_200_OK)
 def redisdata(order_by: Annotated[ str | None, Query() ] = None, order_by_reversed: bool = False):
     hostslist = []
     try:
