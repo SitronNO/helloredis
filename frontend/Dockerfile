@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.12-slim-buster
+FROM python:3.13-slim
 
 # Set the working directory to /app
 WORKDIR /app
@@ -8,13 +8,13 @@ WORKDIR /app
 ADD . /app
 
 # Install any needed packages specified in requirements.txt
-RUN pip3 install -r requirements.txt
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
 
 # Define environment variable
-ENV REDIS_SERVER "redis"
+ENV API_SERVER "localhost:8000"
 
 # Run app.py when the container launches
-CMD ["python", "app.py"]
+CMD ["waitress-serve", "--port=5000", "--call", "frontend:create_app"]

@@ -1,0 +1,12 @@
+FROM python:3.13-slim
+
+WORKDIR /code
+
+COPY ./requirements.txt /code/requirements.txt
+
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+
+COPY ./hr_api /code/hr_api
+COPY ./docker.ini /code/config.ini
+
+CMD ["fastapi", "run", "hr_api/main.py", "--port", "80"]
