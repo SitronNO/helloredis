@@ -76,7 +76,7 @@ def redisdata(order_by: Annotated[ str | None, Query() ] = None, order_by_revers
             ))
         else:
             hostslist.sort(key=lambda entry: (
-                entry.counter,
+                -entry.counter,
                 entry.last_seen,
                 entry.hostname,
                 entry.first_seen,

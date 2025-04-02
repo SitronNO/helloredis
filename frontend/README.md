@@ -10,13 +10,13 @@
     1. `. venv/bin/activate`
 3. Start the web frontend: `python3 ./frontend.py`
 
+
 ## Docker
 
 Build the image:
 
-    docker buildx build -t helloredis_frontend<:tag> .
-
+    docker buildx build -t hr_web<:tag> .
 
 Run the container:
 
-    docker run --rm --name helloredis_frontend -p 5000:5000 helloredis_frontend<:tag>
+    docker run --rm --name hr_web -p 5000:5000 hr_web<:tag>
