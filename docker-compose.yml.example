@@ -1,0 +1,39 @@
+services:
+
+  web:
+    image: hr_web:0.2		# Change tag if needed
+    container_name: hr_web
+    restart: unless-stopped
+    networks:
+      - public
+      - internal
+    ports:
+      - "5000:5000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - API_SERVER=hr_api	# Must have same name as container_name for API
+
+  api:
+    image: hr_api:0.2		# Change tag if needed
+    container_name: hr_api
+    restart: unless-stopped
+    networks:
+      - internal
+    expose:
+      - "80"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - REDIS_SERVER=redis	# Must have same name as container_name for Redis
+
+  redis:
+    image: redis:7
+    container_name: redis
+    expose:
+      - "6379"
+    command: redis-server --appendonly yes
+    networks:
+      - internal
+
+networks:
+  public:
+  internal:

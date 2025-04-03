@@ -130,3 +130,4 @@ dmypy.json
 
 # Project custom
 *.ini
+docker-compose.yml
