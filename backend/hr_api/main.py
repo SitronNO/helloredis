@@ -1,24 +1,25 @@
 #!/usr/bin/env python3
 
+import datetime
+import os
 from typing import Annotated
 from fastapi import FastAPI, Request, status, HTTPException, Query
 from redis import Redis, RedisError
 from pydantic import BaseModel
-import configparser
-import datetime
 
-# Configparser
-config = configparser.ConfigParser()
-config.read('config.ini')
-
-# FastAPI setup:
-app = FastAPI(root_path=config['Web']['root_path'])
+app = FastAPI(root_path='')
 
 # Connect to Redis
-redis = Redis(host=config['Redis']['host'], db=0, decode_responses=True, socket_connect_timeout=2, socket_timeout=2)
+redis = Redis(host=os.getenv('REDIS_SERVER', 'localhost'),
+              db=0,
+              decode_responses=True,
+              socket_connect_timeout=2,
+              socket_timeout=2)
+
 
 class Hostname(BaseModel):
     hostname: str
+
 
 class RedisData(BaseModel):
     hostname: str
@@ -26,8 +27,10 @@ class RedisData(BaseModel):
     last_seen: str
     counter: int
 
+
 class RedisDataResponse(BaseModel):
     data: list[RedisData]
+
 
 def insertdata(hostname):
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -39,10 +42,12 @@ def insertdata(hostname):
         redis.hset(hostname, "last_seen", now)
         redis.hset(hostname, "counter", "1")
 
+
 @app.get("/", status_code=status.HTTP_200_OK)
 def welcome(request: Request):
     return {"message": "Welcome to the HelloRedis API",
             "root_path": request.scope.get("root_path")}
+
 
 @app.get("/redishealth", status_code=status.HTTP_200_OK)
 def redishealth():
@@ -52,12 +57,18 @@ def redishealth():
     except RedisError:
         return {"redis": "Redis is unhealthy"}
 
-@app.get("/redisdata", response_model=RedisDataResponse, status_code=status.HTTP_200_OK)
-def redisdata(order_by: Annotated[ str | None, Query() ] = None, order_by_reversed: bool = False):
+
+@app.get("/redisdata", response_model=RedisDataResponse,
+         status_code=status.HTTP_200_OK)
+def redisdata(order_by: Annotated[str | None, Query()] = None,
+              order_by_reversed: bool = False):
     hostslist = []
     try:
         for key in redis.scan_iter():
-            hostslist.append(RedisData(hostname=key, first_seen=redis.hget(key, "first_seen"), last_seen=redis.hget(key, "last_seen"), counter=redis.hget(key, "counter")))
+            hostslist.append(RedisData(hostname=key,
+                                       first_seen=redis.hget(key, "first_seen"),
+                                       last_seen=redis.hget(key, "last_seen"),
+                                       counter=redis.hget(key, "counter")))
         if order_by == "counter":
             hostslist.sort(key=lambda entry: (
                 entry.counter,
@@ -88,10 +99,10 @@ def redisdata(order_by: Annotated[ str | None, Query() ] = None, order_by_revers
     except RedisError:
         raise HTTPException(status_code=500, detail="Redis is unhealthy")
 
+
 @app.put("/redisdata", status_code=status.HTTP_204_NO_CONTENT)
 def submitdata(hostname: Hostname):
     try:
         insertdata(hostname.hostname)
     except RedisError:
         raise HTTPException(status_code=500, detail="Redis is unhealthy")
-

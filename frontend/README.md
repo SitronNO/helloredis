@@ -19,4 +19,4 @@ Build the image:
 
 Run the container:
 
-    docker run --rm --name hr_web -p 5000:5000 hr_web<:tag>
+    docker run --rm --name hr_web --env API_SERVER=<apiserver-hostname> -p 5000:5000 hr_web<:tag>

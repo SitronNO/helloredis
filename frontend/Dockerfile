@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir --upgrade -r requirements.txt
 EXPOSE 5000
 
 # Define environment variable
-ENV API_SERVER "localhost:8000"
+ENV API_SERVER="localhost:8000"
 
 # Run app.py when the container launches
 CMD ["waitress-serve", "--port=5000", "--call", "frontend:create_app"]

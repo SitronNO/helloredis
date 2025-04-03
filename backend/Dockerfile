@@ -7,6 +7,8 @@ COPY ./requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY ./hr_api /code/hr_api
-COPY ./docker.ini /code/config.ini
+
+# Define environment variable
+ENV REDIS_SERVER="redis"
 
 CMD ["fastapi", "run", "hr_api/main.py", "--port", "80"]

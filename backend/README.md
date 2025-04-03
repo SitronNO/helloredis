@@ -19,4 +19,4 @@ Build the image:
 
 Run the container:
 
-    docker run --rm --name hr_api -p 8000:80 hr_api<:tag>
+    docker run --rm --name hr_api --env REDIS_SERVER=<redis-hostname> -p 8000:80 hr_api<:tag>
