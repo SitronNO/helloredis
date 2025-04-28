@@ -5,13 +5,35 @@ import os
 import requests
 import json
 import logging
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
+
+
+@app.route('/saltpassword', methods=['GET', 'POST'])
+def saltpassword():
+    api_server = os.getenv('API_SERVER', 'localhost:8000')
+    logging.info(f'API Server: {api_server}')
+
+    if request.method == 'POST':
+        user_string = request.form['user_string']
+        logging.info(f"Received string from user: {user_string}")
+        try:
+            response = requests.put(f'http://{ api_server }/saltpassword',
+                                     json={'password': user_string})
+            response.raise_for_status()
+            salted_hash = response.json().get('password')
+            logging.info("Successfully received salted hash from API server.")
+            return render_template('password.html', salted_hash=salted_hash)
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Failed to get salted hash from API server: {e}")
+            return render_template('password.html',
+                                   error='Failed to get salted hash from API server.')
+    return render_template('password.html')
 
 
 @app.route('/')
