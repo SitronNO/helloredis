@@ -157,8 +157,15 @@ def hash_password(password: Password):
         hashed_password = hashlib.sha256(
             password.password.encode()).hexdigest()
 
+        # Get the salt, and check if it exists
+        salt = get_salt()
+
+        if not salt:
+            logger.error("Salt not found in configuration file.")
+            raise ValueError("Salt not found")
+
         # Combine the password and salt
-        salted_password = f'{get_salt()}{password.password}'.encode()
+        salted_password = f'{salt}{password.password}'.encode()
 
         # Generate the hash
         salt_hashed_password = hashlib.sha256(salted_password).hexdigest()
@@ -171,4 +178,4 @@ def hash_password(password: Password):
     except Exception as e:
         # Log the error message
         logger.error(f"Error in salting and hashing password: {e}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500)

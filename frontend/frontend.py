@@ -31,18 +31,18 @@ def password():
             response.raise_for_status()
             salted_hash = response.json().get('salt_hashed_password')
             unsalted_hash = response.json().get('hashed_password')
-            logging.info("Successfully received salted hash from API server.")
+            logging.info("Successfully received the hashed strings from API server.")
             return render_template('password.html',
                                    hostname=local_hostname,
                                    original_string=user_string,
                                    unsalted_hash=unsalted_hash,
                                    salted_hash=salted_hash)
         except requests.exceptions.RequestException as e:
-            logging.error(f"Failed to get salted hash from API server: {e}")
+            logging.error(f"Failed to get the hashed strings from API server: {e}")
             return render_template('password.html',
                                    hostname=local_hostname,
                                    original_string=user_string,
-                                   error='Failed to get salted hash from API server.')
+                                   error='Failed to get the hashed strings from API server.')
     return render_template('password.html', hostname=local_hostname)
 
 
