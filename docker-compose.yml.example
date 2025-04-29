@@ -24,6 +24,9 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - REDIS_SERVER=redis	# Must have same name as container_name for Redis
+      - CONFIGFILE=/config.ini
+    volumes:
+      - "/home/user/git/helloredis/config.ini:/config.ini"  # Change to correct path
 
   redis:
     image: redis:7
