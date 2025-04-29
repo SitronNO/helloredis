@@ -8,7 +8,7 @@
     3. `python3 -m pip install --upgrade -r requirements.txt`
 2. If a python3 venv is already existing:
     1. `. venv/bin/activate`
-3. Start the web frontend: `python3 ./frontend.py`
+3. Start the web frontend: `flask --app frontend run --debug`
 
 
 ## Docker

@@ -4,7 +4,6 @@
     	<h1>Error</h1>
 	<p>Error message:</p>
 	<p>{{ errormsg }}<br /></p>
-	<br />
-	<p><a href="/">Go back</a></p>
 </div> 
+<p><a href="/">Go back</a> or try <a href="{{ url_for('password') }}">hashing a password</a>!</p>
 {% endblock %}

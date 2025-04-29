@@ -29,6 +29,11 @@ except RedisError as e:
     logger.error("Failed to connect to Redis: %s", e)
 
 
+class HashedPassword(BaseModel):
+    hashed_password: str
+    salt_hashed_password: str
+
+
 class Password(BaseModel):
     password: str
 
@@ -144,20 +149,24 @@ def submitdata(hostname: Hostname):
         raise HTTPException(status_code=500, detail="Redis is unhealthy")
 
 
-@app.put("/saltpassword", response_model=Password,
+@app.put("/password", response_model=HashedPassword,
          status_code=status.HTTP_200_OK)
-def saltpassword(password: Password):
+def hash_password(password: Password):
     try:
+        # Hash the password
+        hashed_password = hashlib.sha256(
+            password.password.encode()).hexdigest()
+
         # Combine the password and salt
         salted_password = f'{get_salt()}{password.password}'.encode()
 
         # Generate the hash
-        hash_object = hashlib.sha256(salted_password)
-        hashed_password = hash_object.hexdigest()
+        salt_hashed_password = hashlib.sha256(salted_password).hexdigest()
 
         # Log the info message
         logger.info("Password successfully salted and hashed.")
-        return {"password": hashed_password}
+
+        return {"hashed_password": hashed_password, "salt_hashed_password": salt_hashed_password}
 
     except Exception as e:
         # Log the error message

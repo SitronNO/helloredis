@@ -19,6 +19,13 @@ th, td {
     padding: 5px;
 }
 
+p {
+    margin-top: 5px;
+}
+
+h4 {
+    margin-bottom: 5px;
+}
 body {
     font-family: 'Quicksand', sans-serif;
 }
