@@ -16,7 +16,9 @@ logging.basicConfig(level=logging.INFO,
 
 @app.route('/saltpassword', methods=['GET', 'POST'])
 def saltpassword():
+    local_hostname = socket.gethostname()
     api_server = os.getenv('API_SERVER', 'localhost:8000')
+    logging.info(f'Hostname: {local_hostname}')
     logging.info(f'API Server: {api_server}')
 
     if request.method == 'POST':
@@ -28,12 +30,15 @@ def saltpassword():
             response.raise_for_status()
             salted_hash = response.json().get('password')
             logging.info("Successfully received salted hash from API server.")
-            return render_template('password.html', salted_hash=salted_hash)
+            return render_template('password.html',
+                                   hostname=local_hostname,
+                                   salted_hash=salted_hash)
         except requests.exceptions.RequestException as e:
             logging.error(f"Failed to get salted hash from API server: {e}")
             return render_template('password.html',
+                                   hostname=local_hostname,
                                    error='Failed to get salted hash from API server.')
-    return render_template('password.html')
+    return render_template('password.html', hostname=local_hostname)
 
 
 @app.route('/')
