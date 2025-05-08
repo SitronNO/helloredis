@@ -5,50 +5,60 @@ import os
 import requests
 import json
 import logging
-from flask import Flask, render_template, request
+import configparser
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
+
+# Global parameters
+local_hostname = socket.gethostname()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
 
 
-@app.route('/password', methods=['GET', 'POST'])
-def password():
-    local_hostname = socket.gethostname()
-    api_server = os.getenv('API_SERVER', 'localhost:8000')
-    logging.info(f'Hostname: {local_hostname}')
-    logging.info(f'API Server: {api_server}')
+# Load configuration
+config_file = os.getenv('CONFIGFILE', '/config.ini')
+if not os.path.exists(config_file):
+    logging.error(f"Configuration file '{config_file}' not found.")
+    raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
+    
+config = configparser.ConfigParser()
+config.read(config_file)
+correct_number = config.get('Answers', 'number')
+correct_animal = config.get('Answers', 'animal').lower()
 
+
+@app.route('/guess', methods=['GET', 'POST'])
+def guess():
+    result = None
     if request.method == 'POST':
-        user_string = request.form['user_string']
-        logging.info(f"Received string from user: {user_string}")
 
-        try:
-            response = requests.put(f'http://{ api_server }/password',
-                                     json={'password': user_string})
-            response.raise_for_status()
-            salted_hash = response.json().get('salt_hashed_password')
-            unsalted_hash = response.json().get('hashed_password')
-            logging.info("Successfully received the hashed strings from API server.")
-            return render_template('password.html',
-                                   hostname=local_hostname,
-                                   original_string=user_string,
-                                   unsalted_hash=unsalted_hash,
-                                   salted_hash=salted_hash)
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Failed to get the hashed strings from API server: {e}")
-            return render_template('password.html',
-                                   hostname=local_hostname,
-                                   original_string=user_string,
-                                   error='Failed to get the hashed strings from API server.')
-    return render_template('password.html', hostname=local_hostname)
+        user_number = request.form.get('number')
+        user_animal = request.form.get('animal').lower()
+
+        logging.info(f"User guessed number: {user_number}, animal: {user_animal}")
+
+        correct_num = user_number == correct_number
+        correct_anim = user_animal == correct_animal
+
+        if correct_num and correct_anim:
+            result = "🎉 You guessed both correctly!"
+        elif correct_num:
+            result = "✅ Correct number, but wrong animal."
+        elif correct_anim:
+            result = "✅ Correct animal, but wrong number."
+        else:
+            result = "❌ Both guesses are incorrect."
+
+    return render_template('guess.html',
+                           result=result,
+                           hostname=local_hostname)
 
 
 @app.route('/')
 def index():
-    local_hostname = socket.gethostname()
     api_server = os.getenv('API_SERVER', 'localhost:8000')
 
     logging.info(f'Hostname: {local_hostname}')

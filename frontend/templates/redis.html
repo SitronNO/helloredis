@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block redis %}
+{% block content %}
     <h3>Redis:</h3>
     <table>
         <tr>
@@ -19,6 +19,6 @@
     </table>
     <p>
         <br />
-        Want to hash a password? <a href="{{ url_for('password') }}">Click here</a>!
+        Want to try to guess something? <a href="{{ url_for('guess') }}">Click here</a>!
     </p>
 {% endblock %}

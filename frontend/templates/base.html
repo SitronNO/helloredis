@@ -8,13 +8,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='table.css') }}" type="text/css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}" type="text/css"/>
 
   </head>
 
   <body>
-    <h2>Hello Redis!</h2>
-    <p><strong>Hostname of webserver: </strong> {{ hostname }}</p>
-    {% block redis %}{% endblock %}
+    <div class="pt-3 container text-center">
+      <h1>Hello Redis!</h1>
+      <p>Hostname of webserver:<br /><code>{{ hostname }}</code></p>
+
+      <div class="p-3"></div>
+
+      {% block content %}{% endblock %}
+    </div>
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
   </body>
 </html>
