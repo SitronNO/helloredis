@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-app = FastAPI(root_path='')
+app = FastAPI(root_path=os.getenv('ROOT_PATH', ''))
 
 # Connect to Redis
 try:
@@ -27,15 +27,6 @@ try:
     logger.info("Connected to Redis")
 except RedisError as e:
     logger.error("Failed to connect to Redis: %s", e)
-
-
-class HashedPassword(BaseModel):
-    hashed_password: str
-    salt_hashed_password: str
-
-
-class Password(BaseModel):
-    password: str
 
 
 class Hostname(BaseModel):
@@ -51,21 +42,6 @@ class RedisData(BaseModel):
 
 class RedisDataResponse(BaseModel):
     data: list[RedisData]
-
-
-def get_salt():
-    config_file = os.getenv('CONFIGFILE', '/config.ini')
-    if not os.path.exists(config_file):
-        logger.error(f"Configuration file '{config_file}' not found.")
-        return None
-
-    config = configparser.ConfigParser()
-    config.read(config_file)
-    try:
-        return config['Secrets']['salt']
-    except Exception as e:
-        logger.error(f"Error reading salt from configuration file: {e}")
-        return None
 
 
 def insertdata(hostname):
@@ -147,35 +123,3 @@ def submitdata(hostname: Hostname):
         logger.error("Failed to submit data for hostname %s: %s",
                      hostname.hostname, e)
         raise HTTPException(status_code=500, detail="Redis is unhealthy")
-
-
-@app.put("/password", response_model=HashedPassword,
-         status_code=status.HTTP_200_OK)
-def hash_password(password: Password):
-    try:
-        # Hash the password
-        hashed_password = hashlib.sha256(
-            password.password.encode()).hexdigest()
-
-        # Get the salt, and check if it exists
-        salt = get_salt()
-
-        if not salt:
-            logger.error("Salt not found in configuration file.")
-            raise ValueError("Salt not found")
-
-        # Combine the password and salt
-        salted_password = f'{salt}{password.password}'.encode()
-
-        # Generate the hash
-        salt_hashed_password = hashlib.sha256(salted_password).hexdigest()
-
-        # Log the info message
-        logger.info("Password successfully salted and hashed.")
-
-        return {"hashed_password": hashed_password, "salt_hashed_password": salt_hashed_password}
-
-    except Exception as e:
-        # Log the error message
-        logger.error(f"Error in salting and hashing password: {e}")
-        raise HTTPException(status_code=500)
