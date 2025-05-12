@@ -6,7 +6,7 @@ import requests
 import json
 import logging
 import configparser
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -44,17 +44,24 @@ def guess():
         correct_anim = user_animal == correct_animal
 
         if correct_num and correct_anim:
-            result = "🎉 You guessed both correctly!"
+            result = "🎉 You guessed both correctly! 🎉"
         elif correct_num:
-            result = "✅ Correct number, but wrong animal."
+            result = "Correct number, but wrong animal."
         elif correct_anim:
-            result = "✅ Correct animal, but wrong number."
+            result = "Correct animal, but wrong number."
         else:
-            result = "❌ Both guesses are incorrect."
+            result = "❌ Both guesses are incorrect. ❌"
 
-    return render_template('guess.html',
-                           result=result,
-                           hostname=local_hostname)
+        return render_template('guess.html',
+                               number=user_number,
+                               animal=user_animal,
+                               result=result,
+                               hostname=local_hostname)
+
+    else:
+        return render_template('guess.html',
+                               result=result,
+                               hostname=local_hostname)
 
 
 @app.route('/')

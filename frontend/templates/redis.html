@@ -1,24 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h3>Redis:</h3>
-    <table>
-        <tr>
-            <th>Hostname</th>
-            <th>First seen</th>
-            <th>Last seen</th>
-            <th>Counter</th>
-        </tr>
-    {% for server in servers %}
-        <tr>
-            <td>{{ server.hostname }}</td>
-            <td>{{ server.first_seen }}</td>
-            <td>{{ server.last_seen }}</td>
-            <td>{{ server.counter }}</td>
-        </tr>
-    {% endfor %}
-    </table>
-    <p>
-        <br />
-        Want to try to guess something? <a href="{{ url_for('guess') }}">Click here</a>!
-    </p>
+			<h3>Redis:</h3>
+			<table class="table table-striped table-sm">
+				<tr>
+					<th scope="col">Hostname</th>
+					<th scope="col">First seen</th>
+					<th scope="col">Last seen</th>
+					<th scope="col">Counter</th>
+				</tr>
+				{% for server in servers %}
+				<tr>
+					<td>{{ server.hostname }}</td>
+					<td>{{ server.first_seen }}</td>
+					<td>{{ server.last_seen }}</td>
+					<td>{{ server.counter }}</td>
+				</tr>
+				{% endfor %}
+			</table>
+
+			<p>Want to try to guess something? <a href="{{ url_for('guess') }}">Click here</a>!</p>
 {% endblock %}
