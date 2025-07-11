@@ -16,5 +16,9 @@ EXPOSE 5000
 # Define environment variable
 ENV API_SERVER="localhost:8000"
 
+# Healthcheck
+HEALTHCHECK --interval=1m --timeout=5s --start-period=1m \
+  CMD curl -f http://localhost:5000/healthz || exit 1
+
 # Run app.py when the container launches
 CMD ["waitress-serve", "--port=5000", "--call", "frontend:create_app"]

@@ -5,13 +5,22 @@ import os
 import requests
 import json
 import logging
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
+
+
+@app.route('/healthz', methods=['GET'])
+def health_check():
+    """
+    Health check endpoint.
+    Returns a 200 OK status with a JSON payload if the application is healthy.
+    """
+    return jsonify({'status': 'healthy'}), 200
 
 
 @app.route('/password', methods=['GET', 'POST'])
