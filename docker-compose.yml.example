@@ -12,6 +12,9 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - API_SERVER=hr_api	# Must have same name as container_name for API
+      - CONFIGFILE=/config.ini
+    volumes:
+      - "/home/user/git/helloredis/frontend/config.ini:/config.ini"  # Change to correct path
 
   api:
     image: hr_api:0.2		# Change tag if needed
@@ -24,9 +27,6 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - REDIS_SERVER=redis	# Must have same name as container_name for Redis
-      - CONFIGFILE=/config.ini
-    volumes:
-      - "/home/user/git/helloredis/config.ini:/config.ini"  # Change to correct path
 
   redis:
     image: redis:7
