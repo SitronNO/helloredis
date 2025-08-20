@@ -6,7 +6,7 @@ import requests
 import json
 import logging
 import configparser
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
@@ -28,6 +28,15 @@ config = configparser.ConfigParser()
 config.read(config_file)
 correct_number = config.get('Answers', 'number')
 correct_animal = config.get('Answers', 'animal').lower()
+
+
+@app.route('/healthz', methods=['GET'])
+def health_check():
+    """
+    Health check endpoint.
+    Returns a 200 OK status with a JSON payload if the application is healthy.
+    """
+    return jsonify({'status': 'healthy'}), 200
 
 
 @app.route('/guess', methods=['GET', 'POST'])
