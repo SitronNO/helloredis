@@ -10,6 +10,7 @@ COPY ./hr_api /code/hr_api
 
 # Define environment variable
 ENV REDIS_SERVER="redis"
+ENV ROOT_PATH=""
 
 # Healthcheck
 HEALTHCHECK --interval=1m --timeout=5s --start-period=1m \
